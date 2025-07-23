@@ -1,6 +1,4 @@
 using Application.DTO;
-using Application.DTO.AssociationTrainingModuleCollaborator;
-using Application.DTO.Collaborators;
 using Application.DTO.TrainingModule;
 using Application.DTO.TrainingSubject;
 using Application.Services;
@@ -32,26 +30,17 @@ builder.Services.AddDbContext<AbsanteeContext>(opt =>
 
 
 //Services
-builder.Services.AddTransient<CollaboratorService>();
-builder.Services.AddTransient<CollaboratorService>();
 builder.Services.AddTransient<TrainingSubjectService>();
 builder.Services.AddTransient<TrainingModuleService>();
-builder.Services.AddTransient<AssociationTrainingModuleCollaboratorService>();
 
 //Repositories
-builder.Services.AddTransient<ICollaboratorRepository, CollaboratorRepositoryEF>();
-builder.Services.AddTransient<IAssociationTrainingModuleCollaboratorsRepository, AssociationTrainingModuleCollaboratorRepositoryEF>();
 builder.Services.AddTransient<ITrainingSubjectRepository, TrainingSubjectRepositoryEF>();
 builder.Services.AddTransient<ITrainingModuleRepository, TrainingModuleRepositoryEF>();
 //Factories
-builder.Services.AddTransient<ICollaboratorFactory, CollaboratorFactory>();
-builder.Services.AddTransient<IAssociationTrainingModuleCollaboratorFactory, AssociationTrainingModuleCollaboratorFactory>();
 builder.Services.AddTransient<ITrainingSubjectFactory, TrainingSubjectFactory>();
 builder.Services.AddTransient<ITrainingModuleFactory, TrainingModuleFactory>();
 
 //Mappers
-builder.Services.AddTransient<CollaboratorDataModelConverter>();
-builder.Services.AddTransient<AssociationTrainingModuleCollaboratorDataModelConverter>();
 builder.Services.AddTransient<TrainingSubjectDataModelConverter>();
 builder.Services.AddTransient<TrainingModuleDataModelConverter>();
 builder.Services.AddAutoMapper(cfg =>
@@ -60,10 +49,8 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<DataModelMappingProfile>();
 
     //DTO
-    cfg.CreateMap<Collaborator, CollaboratorDTO>();
     cfg.CreateMap<TrainingSubject, TrainingSubjectDTO>();
     cfg.CreateMap<TrainingModule, TrainingModuleDTO>();
-    cfg.CreateMap<AssociationTrainingModuleCollaborator, AssociationTrainingModuleCollaboratorDTO>();
 });
 // MassTransit
 builder.Services.AddMassTransit(x =>
