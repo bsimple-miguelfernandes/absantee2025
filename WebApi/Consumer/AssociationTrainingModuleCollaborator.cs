@@ -1,6 +1,6 @@
 using Application.Services;
 using MassTransit;
-using WebApi;
+using Domain.Messages;
 
 public class AssociationTrainingModuleCollaboratorCreatedConsumer : IConsumer<AssociationTrainingModuleCollaboratorMessage>
 {

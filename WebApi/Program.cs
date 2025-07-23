@@ -70,6 +70,8 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<TrainingModuleCreatedConsumer>();
     x.AddConsumer<TrainingSubjectCreatedConsumer>();
+    x.AddConsumer<TrainingModuleUpdatedConsumer>();
+    x.AddConsumer<TrainingSubjectUpdatedConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -79,6 +81,8 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<TrainingModuleCreatedConsumer>(context);
             e.ConfigureConsumer<TrainingSubjectCreatedConsumer>(context);
+            e.ConfigureConsumer<TrainingSubjectUpdatedConsumer>(context);
+            e.ConfigureConsumer<TrainingModuleUpdatedConsumer>(context);
         });
     });
 });
@@ -91,12 +95,14 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Instance1")
 {
+    Console.WriteLine("⚠️ Swagger habilitado");
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 
 app.UseCors(builder => builder

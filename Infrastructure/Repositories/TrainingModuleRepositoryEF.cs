@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Factory;
 using Domain.Interfaces;
 using Domain.IRepository;
 using Domain.Models;
@@ -10,6 +11,7 @@ namespace Infrastructure.Repositories;
 public class TrainingModuleRepositoryEF : GenericRepositoryEF<ITrainingModule, TrainingModule, TrainingModuleDataModel>, ITrainingModuleRepository
 {
     private readonly IMapper _mapper;
+
     public TrainingModuleRepositoryEF(AbsanteeContext context, IMapper mapper) : base(context, mapper)
     {
         _mapper = mapper;
@@ -41,6 +43,19 @@ public class TrainingModuleRepositoryEF : GenericRepositoryEF<ITrainingModule, T
         return _mapper.Map<TrainingModuleDataModel, TrainingModule>(trainingModuleDM);
     }
 
+    public async Task<ITrainingModule> UpdateAsync(ITrainingModule trainingModule)
+    {
+        var trainingModuleDM = await _context.Set<TrainingModuleDataModel>().FirstOrDefaultAsync(m => m.Id == trainingModule.Id);
+        if (trainingModuleDM == null) return null;
+
+        trainingModuleDM.Id = trainingModule.Id;
+        trainingModuleDM.TrainingSubjectId = trainingModule.TrainingSubjectId;
+        trainingModuleDM.Periods = trainingModule.Periods;
+
+        _context.Set<TrainingModuleDataModel>().Update(trainingModuleDM);
+        _context.SaveChanges();
+        return _mapper.Map<TrainingModule>(trainingModuleDM);
+    }
     public async Task<IEnumerable<TrainingModule>> GetBySubjectIdAndFinished(Guid subjectId, DateTime date)
     {
         var modules = await _context.Set<TrainingModuleDataModel>()

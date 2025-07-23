@@ -54,4 +54,49 @@ public class TrainingModuleService
         await _trainingModuleRepository.AddAsync(trainingModule);
         await _trainingModuleRepository.SaveChangesAsync();
     }
+    public async Task<Result<TrainingModuleDTO?>> SubmitUpdateAsync(Guid id, Guid subjectId, List<PeriodDateTime> periods)
+    {
+        var trainingModule = await _trainingModuleRepository.GetByIdAsync(id);
+        if (trainingModule == null)
+            return Result<TrainingModuleDTO?>.Failure(Error.NotFound("TrainingModule not found."));
+
+        try
+        {
+            var updatedTrainingModule = new TrainingModule(id, subjectId, periods);
+
+            var updated = await _trainingModuleRepository.UpdateAsync(updatedTrainingModule);
+
+            var updatedDto = _mapper.Map<TrainingModuleDTO>(updated);
+            return Result<TrainingModuleDTO?>.Success(updatedDto);
+        }
+        catch (Exception e)
+        {
+            return Result<TrainingModuleDTO?>.Failure(Error.InternalServerError(e.Message));
+        }
+    }
+    public async Task<Result<IEnumerable<TrainingModuleDTO>>> GetAll()
+    {
+        var trainingModules = await _trainingModuleRepository.GetAllAsync();
+        var trainingModuleDtos = trainingModules.Select(_mapper.Map<TrainingModuleDTO>);
+
+        return Result<IEnumerable<TrainingModuleDTO>>.Success(trainingModuleDtos);
+
+    }
+
+    public async Task<Result<TrainingModuleDTO>> GetById(Guid id)
+    {
+        try
+        {
+            var trainingModule = await _trainingModuleRepository.GetByIdAsync(id);
+            if (trainingModule == null)
+                return Result<TrainingModuleDTO>.Failure(Error.NotFound("TrainingModule not found"));
+
+            var dto = _mapper.Map<TrainingModuleDTO>(trainingModule);
+            return Result<TrainingModuleDTO>.Success(dto);
+        }
+        catch (Exception e)
+        {
+            return Result<TrainingModuleDTO>.Failure(Error.InternalServerError(e.Message));
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Factory;
 using Domain.Interfaces;
 using Domain.IRepository;
 using Domain.Models;
@@ -10,9 +11,11 @@ namespace Infrastructure.Repositories;
 public class TrainingSubjectRepositoryEF : GenericRepositoryEF<ITrainingSubject, TrainingSubject, TrainingSubjectDataModel>, ITrainingSubjectRepository
 {
     private readonly IMapper _mapper;
-    public TrainingSubjectRepositoryEF(AbsanteeContext context, IMapper mapper) : base(context, mapper)
+    private readonly ITrainingSubjectFactory _trainingSubjectFactory;
+    public TrainingSubjectRepositoryEF(AbsanteeContext context, IMapper mapper, ITrainingSubjectFactory trainingSubjectFactory) : base(context, mapper)
     {
         _mapper = mapper;
+        _trainingSubjectFactory = trainingSubjectFactory;
     }
     public override ITrainingSubject? GetById(Guid id)
     {
@@ -56,5 +59,18 @@ public class TrainingSubjectRepositoryEF : GenericRepositoryEF<ITrainingSubject,
     {
         return await _context.Set<TrainingSubjectDataModel>()
                        .AnyAsync(t => t.Subject.Equals(subject));
+    }
+    public async Task<ITrainingSubject> UpdateAsync(ITrainingSubject trainingSubject)
+    {
+        var trainingSubjectDM = await _context.Set<TrainingSubjectDataModel>().FirstOrDefaultAsync(m => m.Id == trainingSubject.Id);
+        if (trainingSubjectDM == null) return null;
+
+        trainingSubjectDM.Id = trainingSubject.Id;
+        trainingSubjectDM.Description = trainingSubject.Description;
+        trainingSubjectDM.Subject = trainingSubject.Subject;
+
+        _context.Set<TrainingSubjectDataModel>().Update(trainingSubjectDM);
+        _context.SaveChanges();
+        return _mapper.Map<TrainingSubject>(trainingSubjectDM);
     }
 }

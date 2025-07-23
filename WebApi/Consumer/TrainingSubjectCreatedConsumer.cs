@@ -1,7 +1,6 @@
 using Application.Services;
-using WebApi;
 using MassTransit;
-using WebApi.Message;
+using Domain.Messages;
 
 public class TrainingSubjectCreatedConsumer : IConsumer<TrainingSubjectMessage>
 {

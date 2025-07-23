@@ -40,4 +40,18 @@ public class TrainingModuleController : ControllerBase
 
         return collabs.ToActionResult();
     }
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TrainingModuleDTO>>> Get()
+    {
+        var result = await _trainingModuleService.GetAll();
+        return result.ToActionResult();
+    }
+
+    // GET: api/trainingmodules/{id}
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TrainingModuleDTO>> GetById(Guid id)
+    {
+        var result = await _trainingModuleService.GetById(id);
+        return result.ToActionResult();
+    }
 }

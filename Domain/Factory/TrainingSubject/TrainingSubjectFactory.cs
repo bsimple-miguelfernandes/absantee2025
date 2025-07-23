@@ -6,17 +6,13 @@ namespace Domain.Factory;
 
 public class TrainingSubjectFactory : ITrainingSubjectFactory
 {
-    private readonly ITrainingSubjectRepository _repository;
 
-    public TrainingSubjectFactory(ITrainingSubjectRepository repository)
+    public TrainingSubjectFactory()
     {
-        _repository = repository;
     }
 
     public async Task<TrainingSubject> Create(Guid id, string subject, string description)
     {
-        if (await _repository.IsDuplicated(subject))
-            throw new ArgumentException("Subject must be unique");
 
         return new TrainingSubject(id, subject, description);
     }

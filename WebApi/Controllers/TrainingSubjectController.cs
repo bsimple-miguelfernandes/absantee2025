@@ -15,7 +15,7 @@ public class TrainingSubjectController : ControllerBase
         _trainingSubjectService = trainingSubjectService;
     }
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Guid>>> Get()
+    public async Task<ActionResult<IEnumerable<TrainingSubjectDTO>>> Get()
     {
         var trainingSubjectService = await _trainingSubjectService.GetAll();
 

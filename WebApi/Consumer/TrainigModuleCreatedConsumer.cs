@@ -1,5 +1,5 @@
 using Application.Services;
-using WebApi;
+using Domain.Messages;
 using MassTransit;
 
 public class TrainingModuleCreatedConsumer : IConsumer<TrainingModuleMessage>

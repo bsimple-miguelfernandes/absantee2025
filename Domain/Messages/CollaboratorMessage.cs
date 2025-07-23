@@ -1,4 +1,4 @@
 using Domain.Models;
-namespace WebApi;
+namespace Domain.Messages;
 //dto
 public record CollaboratorMessage(Guid Id, Guid UserId, PeriodDateTime PeriodDateTime);

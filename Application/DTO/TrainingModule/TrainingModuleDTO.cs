@@ -12,4 +12,11 @@ public record TrainingModuleDTO
     {
 
     }
+    public TrainingModuleDTO(Guid id, Guid trainingSubjectId, List<PeriodDateTime> periods)
+    {
+        Id = id;
+        TrainingSubjectId = trainingSubjectId;
+        Periods = periods;
+    }
+
 }
