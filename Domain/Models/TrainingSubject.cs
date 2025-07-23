@@ -6,8 +6,8 @@ namespace Domain.Models;
 public class TrainingSubject : ITrainingSubject
 {
     public Guid Id { get; }
-    public string Subject { get; }
-    public string Description { get; }
+    public string Subject { get; private set; }
+    public string Description { get; private set; }
 
     public TrainingSubject(string subject, string description)
     {
@@ -26,6 +26,15 @@ public class TrainingSubject : ITrainingSubject
     {
         Id = id;
         Subject = subject;
+        Description = description;
+    }
+    public void UpdateSubject(string subject)
+    {
+        Subject = subject;
+    }
+
+    public void UpdateDescription(string description)
+    {
         Description = description;
     }
 }

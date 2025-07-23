@@ -39,12 +39,13 @@ public class TrainingSubjectService
         {
             return Result<TrainingSubjectDTO>.Failure(Error.InternalServerError(e.Message));
         }
+
         await _publisher.PublishCreatedTrainingSubjectMessageAsync(ts.Id, ts.Subject, ts.Description);
 
         var result = _mapper.Map<TrainingSubject, TrainingSubjectDTO>(ts);
         return Result<TrainingSubjectDTO>.Success(result);
     }
-    public async Task SubmitAsync(Guid Id, string subject, string description)
+    public async Task<Result<TrainingSubjectDTO>> SubmitAsync(Guid Id, string subject, string description)
     {
 
         var exists = await _trainingSubjectRepository.ExistsAsync(Id);
@@ -58,7 +59,47 @@ public class TrainingSubjectService
             description
         );
 
-        await _trainingSubjectRepository.AddAsync(TrainingSubject);
-        await _trainingSubjectRepository.SaveChangesAsync();
+        var addedSubject = await _trainingSubjectRepository.AddAsync(TrainingSubject);
+        // await _repository.SaveChangesAsync();
+
+        var dto = _mapper.Map<TrainingSubjectDTO>(addedSubject);
+        return Result<TrainingSubjectDTO>.Success(dto);
+    }
+    public async Task<Result<UpdatedTrainingSubjectDTO?>> UpdateTrainingSubject(UpdateTrainingSubjectDTO dto)
+    {
+        var trainingSubject = await _trainingSubjectRepository.GetByIdAsync(dto.Id);
+        if (trainingSubject == null)
+            return Result<UpdatedTrainingSubjectDTO?>.Failure(Error.NotFound("TrainingSubject not found."));
+
+        trainingSubject.UpdateSubject(dto.Subject);
+        trainingSubject.UpdateDescription(dto.Description);
+
+        var updated = await _trainingSubjectRepository.UpdateTrainingSubject(trainingSubject);
+        if (updated == null)
+            return Result<UpdatedTrainingSubjectDTO?>.Failure(Error.InternalServerError("Failed to update TrainingSubject."));
+
+        var updatedDto = _mapper.Map<UpdatedTrainingSubjectDTO>(updated);
+
+        //Publish message to message broker
+        await _publisher.PublishUpdatedTrainingSubjectMessageAsync(updated.Id, updated.Subject, updated.Description);
+
+        return Result<UpdatedTrainingSubjectDTO?>.Success(updatedDto);
+    }
+
+    public async Task<Result<TrainingSubjectDTO?>> SubmitUpdateAsync(Guid id, string subject, string description)
+    {
+        var trainingSubject = await _trainingSubjectRepository.GetByIdAsync(id);
+        if (trainingSubject == null)
+            return Result<TrainingSubjectDTO?>.Failure(Error.NotFound("TrainingSubject not found."));
+
+        trainingSubject.UpdateSubject(subject);
+        trainingSubject.UpdateDescription(description);
+
+        var updated = await _trainingSubjectRepository.UpdateTrainingSubject(trainingSubject);
+        if (updated == null)
+            return Result<TrainingSubjectDTO?>.Failure(Error.InternalServerError("Failed to update TrainingSubject."));
+
+        var updatedDto = _mapper.Map<TrainingSubjectDTO>(updated);
+        return Result<TrainingSubjectDTO?>.Success(updatedDto);
     }
 }

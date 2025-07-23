@@ -2,13 +2,13 @@ using Domain.Models;
 
 namespace Application.DTO.TrainingModule;
 
-public record TrainingModuleDTO
+public record UpdatedTrainingModuleDTO
 {
     public Guid Id { get; set; }
     public Guid TrainingSubjectId { get; set; }
     public List<PeriodDateTime> Periods { get; set; }
 
-    public TrainingModuleDTO(Guid id, Guid trainingSubjectId, List<PeriodDateTime> periods)
+    public UpdatedTrainingModuleDTO(Guid id, Guid trainingSubjectId, List<PeriodDateTime> periods)
     {
         Id = id;
         TrainingSubjectId = trainingSubjectId;

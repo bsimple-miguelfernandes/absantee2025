@@ -92,4 +92,34 @@ public class TrainingModuleRepositoryEF : GenericRepositoryEF<ITrainingModule, T
     {
         return await _context.Set<TrainingSubjectDataModel>().AnyAsync(ts => ts.Id == id);
     }
+    public async Task<ITrainingModule?> UpdateTrainingModule(TrainingModule trainingModule)
+    {
+        var trainingModuleDM = await _context.Set<TrainingModuleDataModel>()
+                                             .Include(tm => tm.Periods)
+                                             .FirstOrDefaultAsync(tm => tm.Id == trainingModule.Id);
+
+        if (trainingModuleDM == null)
+            return null;
+
+        // Atualiza os campos simples
+        trainingModuleDM.TrainingSubjectId = trainingModule.TrainingSubjectId;
+
+        // Remove períodos antigos e substitui por novos
+        trainingModuleDM.Periods.Clear();
+        foreach (var period in trainingModule.Periods)
+        {
+            trainingModuleDM.Periods.Add(new PeriodDateTime
+            {
+                _initDate = period._initDate,
+                _finalDate = period._finalDate
+            });
+        }
+
+        _context.Set<TrainingModuleDataModel>().Update(trainingModuleDM);
+        await _context.SaveChangesAsync();
+
+        var updated = _mapper.Map<TrainingModuleDataModel, TrainingModule>(trainingModuleDM);
+        return updated;
+    }
+
 }

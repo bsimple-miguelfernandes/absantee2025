@@ -26,4 +26,15 @@ public class TrainingModuleController : ControllerBase
 
         return addedTS.ToActionResult();
     }
+    [HttpPut]
+    public async Task<ActionResult<UpdatedTrainingModuleDTO>> UpdateTrainingModule([FromBody] UpdateTrainingModuleDTO newModule)
+    {
+        if (newModule.Id == Guid.Empty)
+            return BadRequest("Id is required");
+
+        var result = await _trainingModuleService.UpdateTrainingModule(newModule);
+
+        if (result == null) return BadRequest("Invalid arguments");
+        return Ok(result);
+    }
 }

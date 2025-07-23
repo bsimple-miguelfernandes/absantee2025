@@ -9,4 +9,5 @@ public interface ITrainingSubjectRepository : IGenericRepositoryEF<ITrainingSubj
 {
     Task<bool> IsDuplicated(string subject);
     Task<bool> ExistsAsync(Guid id);
+    Task<TrainingSubject?> UpdateTrainingSubject(ITrainingSubject trainingSubject);
 }

@@ -7,8 +7,9 @@ public record TrainingPeriodDTO
     public Guid Id { get; set; }
     public PeriodDate PeriodDate { get; set; }
 
-    public TrainingPeriodDTO()
+    public TrainingPeriodDTO(Guid id, PeriodDate periodDate)
     {
+        Id = id;
+        PeriodDate = periodDate;
     }
-
 }

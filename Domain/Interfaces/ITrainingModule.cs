@@ -7,5 +7,7 @@ namespace Domain.Interfaces
         Guid Id { get; }
         Guid TrainingSubjectId { get; }
         List<PeriodDateTime> Periods { get; }
+        public void UpdateTrainingSubjectId(Guid newSubjectId);
+        public void UpdatePeriods(List<PeriodDateTime> newPeriods);
     }
 }

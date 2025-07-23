@@ -56,6 +56,8 @@ builder.Services.AddAutoMapper(cfg =>
     //DTO
     cfg.CreateMap<TrainingSubject, TrainingSubjectDTO>();
     cfg.CreateMap<TrainingModule, TrainingModuleDTO>();
+    cfg.CreateMap<TrainingModule, UpdatedTrainingModuleDTO>();
+    cfg.CreateMap<TrainingSubject, UpdatedTrainingSubjectDTO>();
 
     cfg.CreateMap<TrainingPeriod, TrainingPeriodDTO>();
     cfg.CreateMap<TrainingPeriodDTO, TrainingPeriod>();
@@ -68,7 +70,8 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<TrainingModuleCreatedConsumer>();
     x.AddConsumer<TrainingSubjectCreatedConsumer>();
-
+    x.AddConsumer<TrainingModuleUpdatedConsumer>();
+    x.AddConsumer<TrainingSubjectUpdatedConsumer>();
     x.UsingRabbitMq((context, cfg) =>
    {
        cfg.Host("rabbitmq://localhost");
@@ -77,6 +80,9 @@ builder.Services.AddMassTransit(x =>
        {
            e.ConfigureConsumer<TrainingSubjectCreatedConsumer>(context);
            e.ConfigureConsumer<TrainingModuleCreatedConsumer>(context);
+           e.ConfigureConsumer<TrainingSubjectUpdatedConsumer>(context);
+           e.ConfigureConsumer<TrainingModuleUpdatedConsumer>(context);
+
        });
    });
 });
@@ -93,12 +99,14 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Instance1")
 {
+    Console.WriteLine("⚠️ Swagger habilitado");
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 
 app.UseCors(builder => builder
@@ -107,7 +115,7 @@ app.UseCors(builder => builder
                 .SetIsOriginAllowed((host) => true)
                 .AllowCredentials());
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

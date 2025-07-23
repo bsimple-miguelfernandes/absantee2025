@@ -20,10 +20,21 @@ public class TrainingSubjectController : ControllerBase
     //      - descrição (não nulo, max. 100 carateres alfanuméricos)
     // POST  api/TrainingSubject
     [HttpPost]
-    public async Task<ActionResult<TrainingSubjectDTO>> AddTrainingSubject(AddTrainingSubjectDTO tsDTO)
+    public async Task<ActionResult<TrainingSubjectDTO>> AddTrainingSubject([FromBody] AddTrainingSubjectDTO tsDTO)
     {
         var addedTS = await _trainingSubjectService.Add(tsDTO);
 
         return addedTS.ToActionResult();
+    }
+    [HttpPut]
+    public async Task<ActionResult<UpdatedTrainingSubjectDTO>> UpdateTrainingSubject([FromBody] UpdateTrainingSubjectDTO newSubject)
+    {
+        if (newSubject.Id == Guid.Empty)
+            return BadRequest("Id is required");
+
+        var result = await _trainingSubjectService.UpdateTrainingSubject(newSubject);
+
+        if (result == null) return BadRequest("Invalid arguments");
+        return Ok(result);
     }
 }

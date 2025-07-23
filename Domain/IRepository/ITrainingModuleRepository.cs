@@ -11,5 +11,7 @@ namespace Domain.IRepository
         public Task<bool> HasOverlappingPeriodsAsync(Guid trainingSubjectId, List<PeriodDateTime> newPeriods);
         Task<bool> ExistsAsync(Guid id);
         Task<IEnumerable<TrainingModule>> GetBySubjectAndAfterDateFinished(Guid subjectId, DateTime date);
+        Task<ITrainingModule?> UpdateTrainingModule(TrainingModule trainingModule);
+
     }
 }

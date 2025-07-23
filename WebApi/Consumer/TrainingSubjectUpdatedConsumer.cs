@@ -2,20 +2,20 @@ using Application.Services;
 using MassTransit;
 using Domain.Messages;
 
-public class TrainingSubjectCreatedConsumer : IConsumer<TrainingSubjectMessage>
+public class TrainingSubjectUpdatedConsumer : IConsumer<TrainingSubjectUpdatedMessage>
 {
     private readonly TrainingSubjectService _trainingSubjectService;
 
-    public TrainingSubjectCreatedConsumer(TrainingSubjectService trainingSubjectService)
+    public TrainingSubjectUpdatedConsumer(TrainingSubjectService trainingSubjectService)
     {
         _trainingSubjectService = trainingSubjectService;
     }
-    public async Task Consume(ConsumeContext<TrainingSubjectMessage> context)
+    public async Task Consume(ConsumeContext<TrainingSubjectUpdatedMessage> context)
     {
         var senderId = context.Headers.Get<string>("SenderId");
         if (senderId == InstanceInfo.InstanceId)
             return;
         var msg = context.Message;
-        await _trainingSubjectService.SubmitAsync(msg.Id, msg.Subject, msg.Description);
+        await _trainingSubjectService.SubmitUpdateAsync(msg.Id, msg.Subject, msg.Description);
     }
 }

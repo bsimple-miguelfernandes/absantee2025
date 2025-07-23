@@ -61,4 +61,18 @@ public class TrainingSubjectRepositoryEF : GenericRepositoryEF<ITrainingSubject,
         return await _context.Set<TrainingSubjectDataModel>()
                        .AnyAsync(t => t.Subject.Equals(subject));
     }
+    public async Task<TrainingSubject?> UpdateTrainingSubject(ITrainingSubject trainingSubject)
+    {
+        var trainingSubjectDM = await _context.Set<TrainingSubjectDataModel>()
+            .FirstOrDefaultAsync(s => s.Id == trainingSubject.Id);
+
+        if (trainingSubjectDM == null) return null;
+
+        trainingSubjectDM.Subject = trainingSubject.Subject;
+        trainingSubjectDM.Description = trainingSubject.Description;
+
+        _context.Set<TrainingSubjectDataModel>().Update(trainingSubjectDM);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<TrainingSubjectDataModel, TrainingSubject>(trainingSubjectDM);
+    }
 }

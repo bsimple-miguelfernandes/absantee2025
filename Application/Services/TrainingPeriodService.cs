@@ -43,13 +43,15 @@ public class TrainingPeriodService
         }
         catch (Exception)
         {
-            return null;
+            throw new ArgumentException("Error creating training period.");
         }
     }
-    public async Task SubmitAsync(DateOnly initDate, DateOnly finalDate)
+    public async Task<Result<TrainingPeriodDTO>> SubmitAsync(DateOnly initDate, DateOnly finalDate)
     {
         var trainingModule = _factory.Create(initDate, finalDate);
-        await _repository.AddAsync(trainingModule);
-        await _repository.SaveChangesAsync();
+        var addedTP = await _repository.AddAsync(trainingModule);
+        // await _repository.SaveChangesAsync();
+        var dto = _mapper.Map<TrainingPeriodDTO>(addedTP);
+        return Result<TrainingPeriodDTO>.Success(dto);
     }
 }

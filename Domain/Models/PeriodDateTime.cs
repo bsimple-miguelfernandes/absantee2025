@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+using System.Text.Json.Serialization;
+
+
 public class PeriodDateTime
 {
     public DateTime _initDate { get; set; }

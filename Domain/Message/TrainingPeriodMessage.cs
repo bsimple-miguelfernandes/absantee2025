@@ -1,4 +1,4 @@
 using Domain.Models;
-namespace WebApi;
+namespace Domain.Messages;
 //dto
 public record TrainingPeriodMessage(Guid Id, PeriodDate PeriodDate);
