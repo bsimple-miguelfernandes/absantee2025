@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Domain.Factory;
 using Domain.Interfaces;
 using Domain.IRepository;
 using Domain.Models;
@@ -11,14 +10,9 @@ namespace Infrastructure.Repositories;
 public class TrainingModuleRepositoryEF : GenericRepositoryEF<ITrainingModule, TrainingModule, TrainingModuleDataModel>, ITrainingModuleRepository
 {
     private readonly IMapper _mapper;
-
     public TrainingModuleRepositoryEF(AbsanteeContext context, IMapper mapper) : base(context, mapper)
     {
         _mapper = mapper;
-    }
-
-    public TrainingModuleRepositoryEF(DbContext context, IMapper mapper) : base(context, mapper)
-    {
     }
 
     public override ITrainingModule? GetById(Guid id)
@@ -43,19 +37,6 @@ public class TrainingModuleRepositoryEF : GenericRepositoryEF<ITrainingModule, T
         return _mapper.Map<TrainingModuleDataModel, TrainingModule>(trainingModuleDM);
     }
 
-    public async Task<ITrainingModule> UpdateAsync(ITrainingModule trainingModule)
-    {
-        var trainingModuleDM = await _context.Set<TrainingModuleDataModel>().FirstOrDefaultAsync(m => m.Id == trainingModule.Id);
-        if (trainingModuleDM == null) return null;
-
-        trainingModuleDM.Id = trainingModule.Id;
-        trainingModuleDM.TrainingSubjectId = trainingModule.TrainingSubjectId;
-        trainingModuleDM.Periods = trainingModule.Periods;
-
-        _context.Set<TrainingModuleDataModel>().Update(trainingModuleDM);
-        _context.SaveChanges();
-        return _mapper.Map<TrainingModule>(trainingModuleDM);
-    }
     public async Task<IEnumerable<TrainingModule>> GetBySubjectIdAndFinished(Guid subjectId, DateTime date)
     {
         var modules = await _context.Set<TrainingModuleDataModel>()
@@ -106,4 +87,39 @@ public class TrainingModuleRepositoryEF : GenericRepositoryEF<ITrainingModule, T
 
         return false;
     }
+
+    public async Task<bool> ExistsAsync(Guid id)
+    {
+        return await _context.Set<TrainingSubjectDataModel>().AnyAsync(ts => ts.Id == id);
+    }
+    public async Task<ITrainingModule?> UpdateTrainingModule(TrainingModule trainingModule)
+    {
+        var trainingModuleDM = await _context.Set<TrainingModuleDataModel>()
+                                             .Include(tm => tm.Periods)
+                                             .FirstOrDefaultAsync(tm => tm.Id == trainingModule.Id);
+
+        if (trainingModuleDM == null)
+            return null;
+
+        // Atualiza os campos simples
+        trainingModuleDM.TrainingSubjectId = trainingModule.TrainingSubjectId;
+
+        // Remove períodos antigos e substitui por novos
+        trainingModuleDM.Periods.Clear();
+        foreach (var period in trainingModule.Periods)
+        {
+            trainingModuleDM.Periods.Add(new PeriodDateTime
+            {
+                _initDate = period._initDate,
+                _finalDate = period._finalDate
+            });
+        }
+
+        _context.Set<TrainingModuleDataModel>().Update(trainingModuleDM);
+        await _context.SaveChangesAsync();
+
+        var updated = _mapper.Map<TrainingModuleDataModel, TrainingModule>(trainingModuleDM);
+        return updated;
+    }
+
 }

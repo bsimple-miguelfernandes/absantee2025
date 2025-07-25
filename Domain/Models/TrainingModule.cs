@@ -5,8 +5,8 @@ namespace Domain.Models
     public class TrainingModule : ITrainingModule
     {
         public Guid Id { get; }
-        public Guid TrainingSubjectId { get; }
-        public List<PeriodDateTime> Periods { get; }
+        public Guid TrainingSubjectId { get; private set; }
+        public List<PeriodDateTime> Periods { get; private set; }
 
         public TrainingModule(Guid trainingSubjectId, List<PeriodDateTime> periods)
         {
@@ -39,6 +39,22 @@ namespace Domain.Models
             Id = id;
             TrainingSubjectId = trainingSubjectId;
             Periods = periods;
+        }
+
+        public void UpdateTrainingSubjectId(Guid newSubjectId)
+        {
+            if (newSubjectId == Guid.Empty)
+                throw new ArgumentException("Training subject ID cannot be empty");
+
+            TrainingSubjectId = newSubjectId;
+        }
+
+        public void UpdatePeriods(List<PeriodDateTime> newPeriods)
+        {
+            if (newPeriods == null || newPeriods.Count == 0)
+                throw new ArgumentException("Periods cannot be null or empty");
+
+            Periods = newPeriods;
         }
     }
 }

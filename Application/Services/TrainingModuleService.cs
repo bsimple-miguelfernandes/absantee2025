@@ -19,52 +19,64 @@ public class TrainingModuleService
         _trainingModuleFactory = trainingModuleFactory;
         _mapper = mapper;
     }
-    public async Task<Result<TrainingModuleDTO>> Add(AddTrainingModuleDTO tmDTO)
-    {
-        ITrainingModule tm;
+    /*     public async Task<Result<TrainingModuleDTO>> Add(AddTrainingModuleDTO tmDTO)
+        {
+            ITrainingModule tm;
 
-        try
+            try
+            {
+                tm = await _trainingModuleFactory.Create(tmDTO.TrainingSubjectId, tmDTO.Periods);
+                tm = await _trainingModuleRepository.AddAsync(tm);
+            }
+            catch (ArgumentException a)
+            {
+                return Result<TrainingModuleDTO>.Failure(Error.BadRequest(a.Message));
+            }
+            catch (Exception e)
+            {
+                return Result<TrainingModuleDTO>.Failure(Error.BadRequest(e.Message));
+            }
+
+            var result = _mapper.Map<TrainingModule, TrainingModuleDTO>((TrainingModule)tm);
+            if (result == null)
+            {
+                return Result<TrainingModuleDTO>.Failure(Error.InternalServerError("Mapping failed"));
+            }
+            return Result<TrainingModuleDTO>.Success(result);
+        } */
+    public async Task<Result<TrainingModuleDTO>> SubmitAsync(Guid Id, Guid subjectId, List<PeriodDateTime> periods)
+    {
+        var exists = await _trainingModuleRepository.ExistsAsync(Id);
+        if (exists)
         {
-            tm = await _trainingModuleFactory.Create(tmDTO.TrainingSubjectId, tmDTO.Periods);
-            tm = await _trainingModuleRepository.AddAsync(tm);
-        }
-        catch (ArgumentException a)
-        {
-            return Result<TrainingModuleDTO>.Failure(Error.BadRequest(a.Message));
-        }
-        catch (Exception e)
-        {
-            return Result<TrainingModuleDTO>.Failure(Error.BadRequest(e.Message));
+            throw new ArgumentException($"Training subject with name {subjectId} already exists.");
         }
 
-        var result = _mapper.Map<TrainingModule, TrainingModuleDTO>((TrainingModule)tm);
-        if (result == null)
-        {
-            return Result<TrainingModuleDTO>.Failure(Error.InternalServerError("Mapping failed"));
-        }
-        return Result<TrainingModuleDTO>.Success(result);
-    }
-    public async Task SubmitAsync(Guid subjectId, List<PeriodDateTime> periods)
-    {
         var trainingModule = await _trainingModuleFactory.Create(
             subjectId,
             periods
         );
 
-        await _trainingModuleRepository.AddAsync(trainingModule);
-        await _trainingModuleRepository.SaveChangesAsync();
+        var addedTrainingModule = await _trainingModuleRepository.AddAsync(trainingModule);
+        // await _repository.SaveChangesAsync();
+
+        var dto = _mapper.Map<TrainingModuleDTO>(addedTrainingModule);
+        return Result<TrainingModuleDTO>.Success(dto);
     }
     public async Task<Result<TrainingModuleDTO?>> SubmitUpdateAsync(Guid id, Guid subjectId, List<PeriodDateTime> periods)
     {
         var trainingModule = await _trainingModuleRepository.GetByIdAsync(id);
-        if (trainingModule == null)
+        if (trainingModule is not TrainingModule concreteTM)
             return Result<TrainingModuleDTO?>.Failure(Error.NotFound("TrainingModule not found."));
 
         try
         {
-            var updatedTrainingModule = new TrainingModule(id, subjectId, periods);
+            concreteTM.UpdateTrainingSubjectId(subjectId);
+            concreteTM.UpdatePeriods(periods);
 
-            var updated = await _trainingModuleRepository.UpdateAsync(updatedTrainingModule);
+            var updated = await _trainingModuleRepository.UpdateTrainingModule(concreteTM);
+            if (updated == null)
+                return Result<TrainingModuleDTO?>.Failure(Error.InternalServerError("Failed to update TrainingModule."));
 
             var updatedDto = _mapper.Map<TrainingModuleDTO>(updated);
             return Result<TrainingModuleDTO?>.Success(updatedDto);
