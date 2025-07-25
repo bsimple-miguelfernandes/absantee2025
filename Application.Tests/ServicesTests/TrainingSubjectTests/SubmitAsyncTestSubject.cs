@@ -6,11 +6,12 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+namespace Application.Tests.ServicesTests;
 
-public class SubmitAsyncTest
+public class SubmitAsyncTestSubject
 {
     [Fact]
-    public async Task SubmitAsync_WhenNotExists_AddsTrainingSubjectAndSavesChanges()
+    public async Task SubmitAsync_WhenNotExists_AddsTrainingSubjectAndReturnsResult()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -24,22 +25,26 @@ public class SubmitAsyncTest
 
         var repositoryMock = new Mock<ITrainingSubjectRepository>();
         repositoryMock.Setup(r => r.ExistsAsync(id)).ReturnsAsync(false);
-        repositoryMock.Setup(r => r.AddAsync(trainingSubject)).Returns(Task.CompletedTask);
-        repositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
+        repositoryMock.Setup(r => r.AddAsync(trainingSubject))
+                      .ReturnsAsync(trainingSubject);  // Corrigido aqui
 
         var mapperMock = new Mock<AutoMapper.IMapper>();
+        mapperMock.Setup(m => m.Map<TrainingSubject, Application.DTO.TrainingSubject.TrainingSubjectDTO>(trainingSubject))
+                  .Returns(new Application.DTO.TrainingSubject.TrainingSubjectDTO());
+
         var publisherMock = new Mock<Application.IPublisher.IMessagePublisher>();
 
         var service = new TrainingSubjectService(repositoryMock.Object, factoryMock.Object, mapperMock.Object, publisherMock.Object);
 
         // Act
-        await service.SubmitAsync(id, subject, description);
+        var result = await service.SubmitAsync(id, subject, description);
 
         // Assert
+        Assert.True(result.IsSuccess);
+
         repositoryMock.Verify(r => r.ExistsAsync(id), Times.Once);
         factoryMock.Verify(f => f.Create(subject, description), Times.Once);
         repositoryMock.Verify(r => r.AddAsync(trainingSubject), Times.Once);
-        repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]

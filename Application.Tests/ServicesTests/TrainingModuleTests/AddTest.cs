@@ -7,10 +7,13 @@ using Domain.Interfaces;
 using Domain.IRepository;
 using Domain.Models;
 using Moq;
+using System.Reflection;
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+namespace Application.Tests.ServicesTests;
 
 public class AddTest
 {
@@ -18,36 +21,44 @@ public class AddTest
     public async Task Add_WhenSuccessful_ReturnsSuccessResult()
     {
         // Arrange
-        var tmDTO = new AddTrainingModuleDTO
-        {
-            TrainingSubjectId = Guid.NewGuid(),
-            Periods = new List<PeriodDateTime>
-            {
-                new PeriodDateTime(DateTime.UtcNow, DateTime.UtcNow.AddDays(1))
-            }
-        };
+        var trainingModuleId = Guid.NewGuid();
+        var trainingSubjectId = Guid.NewGuid();
 
-        var mockTrainingModule = new Mock<ITrainingModule>();
-        mockTrainingModule.SetupGet(tm => tm.Id).Returns(Guid.NewGuid());
-        mockTrainingModule.SetupGet(tm => tm.TrainingSubjectId).Returns(tmDTO.TrainingSubjectId);
-        mockTrainingModule.SetupGet(tm => tm.Periods).Returns(tmDTO.Periods);
+        // Datas no futuro para evitar falha de validação
+        var futureStart = new DateTime(2050, 1, 1, 8, 0, 0, DateTimeKind.Utc);
+        var futureEnd = new DateTime(2050, 1, 2, 8, 0, 0, DateTimeKind.Utc);
+
+        var periods = new List<PeriodDateTime>
+    {
+        new PeriodDateTime(futureStart, futureEnd)
+    };
+
+        var tmDTO = new AddTrainingModuleDTO(trainingSubjectId, periods);
+
+        // Cria instância concreta
+        var trainingModule = new TrainingModule(trainingSubjectId, periods);
+
+        // Define o Id via campo privado gerado pelo compilador
+        var idField = typeof(TrainingModule).GetField("<Id>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+        idField?.SetValue(trainingModule, trainingModuleId);
 
         var factoryMock = new Mock<ITrainingModuleFactory>();
-        factoryMock.Setup(f => f.Create(tmDTO.TrainingSubjectId, tmDTO.Periods))
-                   .ReturnsAsync(mockTrainingModule.Object);
+        factoryMock.Setup(f => f.Create(trainingSubjectId, periods))
+                   .ReturnsAsync(trainingModule);
 
         var repositoryMock = new Mock<ITrainingModuleRepository>();
-        repositoryMock.Setup(r => r.AddAsync(mockTrainingModule.Object))
-                      .ReturnsAsync(mockTrainingModule.Object);
+        repositoryMock.Setup(r => r.AddAsync(trainingModule))
+                      .ReturnsAsync(trainingModule);
+
+        var expectedDto = new TrainingModuleDTO(trainingModuleId, trainingSubjectId, periods);
 
         var mapperMock = new Mock<IMapper>();
-        var expectedDto = new TrainingModuleDTO(); // cria um DTO vazio ou com valores desejados
-        mapperMock.Setup(m => m.Map<TrainingModule, UpdatedTrainingModuleDTO>(It.IsAny<TrainingModule>()))
+        mapperMock.Setup(m => m.Map<TrainingModule, TrainingModuleDTO>(trainingModule))
                   .Returns(expectedDto);
 
         var publisherMock = new Mock<IMessagePublisher>();
         publisherMock.Setup(p => p.PublishCreatedTrainingModuleMessageAsync(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<List<PeriodDateTime>>()))
+            trainingModuleId, trainingSubjectId, periods))
             .Returns(Task.CompletedTask);
 
         var service = new TrainingModuleService(repositoryMock.Object, factoryMock.Object, mapperMock.Object, publisherMock.Object);
@@ -59,24 +70,27 @@ public class AddTest
         Assert.True(result.IsSuccess);
         Assert.Equal(expectedDto, result.Value);
 
-        factoryMock.Verify(f => f.Create(tmDTO.TrainingSubjectId, tmDTO.Periods), Times.Once);
-        repositoryMock.Verify(r => r.AddAsync(mockTrainingModule.Object), Times.Once);
+        factoryMock.Verify(f => f.Create(trainingSubjectId, periods), Times.Once);
+        repositoryMock.Verify(r => r.AddAsync(trainingModule), Times.Once);
         publisherMock.Verify(p => p.PublishCreatedTrainingModuleMessageAsync(
-            mockTrainingModule.Object.Id, tmDTO.TrainingSubjectId, tmDTO.Periods), Times.Once);
+            trainingModuleId, trainingSubjectId, periods), Times.Once);
     }
+
+
+
+
 
     [Fact]
     public async Task Add_WhenFactoryThrows_ReturnsFailureResult()
     {
         // Arrange
-        var tmDTO = new AddTrainingModuleDTO
-        {
-            TrainingSubjectId = Guid.NewGuid(),
-            Periods = new List<PeriodDateTime>()
-        };
+        var trainingSubjectId = Guid.NewGuid();
+        var periods = new List<PeriodDateTime>();
+
+        var tmDTO = new AddTrainingModuleDTO(trainingSubjectId, periods);
 
         var factoryMock = new Mock<ITrainingModuleFactory>();
-        factoryMock.Setup(f => f.Create(tmDTO.TrainingSubjectId, tmDTO.Periods))
+        factoryMock.Setup(f => f.Create(trainingSubjectId, periods))
                    .ThrowsAsync(new ArgumentException("Invalid arguments"));
 
         var repositoryMock = new Mock<ITrainingModuleRepository>();
@@ -92,8 +106,9 @@ public class AddTest
         Assert.False(result.IsSuccess);
         Assert.Equal("Invalid arguments", result.Error.Message);
 
-        factoryMock.Verify(f => f.Create(tmDTO.TrainingSubjectId, tmDTO.Periods), Times.Once);
+        factoryMock.Verify(f => f.Create(trainingSubjectId, periods), Times.Once);
         repositoryMock.VerifyNoOtherCalls();
         publisherMock.VerifyNoOtherCalls();
     }
+
 }

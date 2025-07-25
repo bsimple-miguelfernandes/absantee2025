@@ -16,28 +16,29 @@ namespace Domain.Tests.TrainingModuleTests
         [Fact]
         public async Task WhenPassingValidData_ThenTrainingModuleIsCreated()
         {
-            //Arrange
+            // Arrange
             var subjectId = Guid.NewGuid();
-            var subject = new Mock<TrainingSubject>();
+            var subject = new TrainingSubject("Valid Subject", "Valid description");
 
             var periodDateTime1 = new PeriodDateTime(DateTime.Now.AddDays(1), DateTime.Now.AddDays(3));
-
             var periodDateTime2 = new PeriodDateTime(DateTime.Now.AddDays(5), DateTime.Now.AddDays(8));
-
             var periods = new List<PeriodDateTime>() { periodDateTime1, periodDateTime2 };
 
             var subjectRepository = new Mock<ITrainingSubjectRepository>();
-            subjectRepository.Setup(s => s.GetByIdAsync(subjectId)).ReturnsAsync(subject.Object);
+            subjectRepository.Setup(s => s.GetByIdAsync(subjectId)).ReturnsAsync(subject);
 
             var moduleRepository = new Mock<ITrainingModuleRepository>();
+            moduleRepository.Setup(m => m.HasOverlappingPeriodsAsync(subjectId, periods)).ReturnsAsync(false);
+
             var factory = new TrainingModuleFactory(subjectRepository.Object, moduleRepository.Object);
 
-            //Act
+            // Act
             var result = await factory.Create(subjectId, periods);
 
-            //Arrange
+            // Assert
             Assert.NotNull(result);
         }
+
 
 
         [Fact]

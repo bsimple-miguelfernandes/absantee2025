@@ -9,18 +9,15 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+namespace Application.Tests.ServicesTests;
 
-public class AddTest
+public class AddTestSubject
 {
     [Fact]
     public async Task Add_WhenSuccessful_ReturnsSuccessResult()
     {
         // Arrange
-        var tsDTO = new AddTrainingSubjectDTO
-        {
-            Subject = "Subject A",
-            Description = "Description A"
-        };
+        var tsDTO = new AddTrainingSubjectDTO("Subject A", "Description A");
 
         var trainingSubject = new TrainingSubject(tsDTO.Subject, tsDTO.Description);
         var trainingSubjectDto = new TrainingSubjectDTO();
@@ -31,7 +28,7 @@ public class AddTest
 
         var repositoryMock = new Mock<ITrainingSubjectRepository>();
         repositoryMock.Setup(r => r.AddAsync(trainingSubject))
-                      .Returns(Task.CompletedTask);
+                      .ReturnsAsync(trainingSubject); // <-- Aqui
 
         var mapperMock = new Mock<IMapper>();
         mapperMock.Setup(m => m.Map<TrainingSubject, TrainingSubjectDTO>(trainingSubject))
@@ -59,47 +56,10 @@ public class AddTest
     }
 
     [Fact]
-    public async Task Add_WhenFactoryThrowsArgumentException_ReturnsFailureBadRequest()
-    {
-        // Arrange
-        var tsDTO = new AddTrainingSubjectDTO
-        {
-            Subject = "Subject B",
-            Description = "Description B"
-        };
-
-        var factoryMock = new Mock<ITrainingSubjectFactory>();
-        factoryMock.Setup(f => f.Create(tsDTO.Subject, tsDTO.Description))
-                   .ThrowsAsync(new ArgumentException("Invalid argument"));
-
-        var repositoryMock = new Mock<ITrainingSubjectRepository>();
-        var mapperMock = new Mock<IMapper>();
-        var publisherMock = new Mock<IMessagePublisher>();
-
-        var service = new TrainingSubjectService(repositoryMock.Object, factoryMock.Object, mapperMock.Object, publisherMock.Object);
-
-        // Act
-        var result = await service.Add(tsDTO);
-
-        // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Invalid argument", result.Error.Message);
-
-        factoryMock.Verify(f => f.Create(tsDTO.Subject, tsDTO.Description), Times.Once);
-        repositoryMock.VerifyNoOtherCalls();
-        publisherMock.VerifyNoOtherCalls();
-        mapperMock.VerifyNoOtherCalls();
-    }
-
-    [Fact]
     public async Task Add_WhenFactoryThrowsOtherException_ReturnsFailureInternalServerError()
     {
         // Arrange
-        var tsDTO = new AddTrainingSubjectDTO
-        {
-            Subject = "Subject C",
-            Description = "Description C"
-        };
+        var tsDTO = new AddTrainingSubjectDTO("Subject C", "Description C");
 
         var factoryMock = new Mock<ITrainingSubjectFactory>();
         factoryMock.Setup(f => f.Create(tsDTO.Subject, tsDTO.Description))

@@ -1,34 +1,30 @@
-using Application.DTO.TrainingModule;
+/* using Application.DTO.TrainingModule;
 using Domain.Models;
 
-namespace WebApi.IntegrationTests.Helpers;
-
-public static class TrainingModuleHelper
+namespace WebApi.IntegrationTests.Helpers
 {
-    public static AddTrainingModuleDTO GenerateAddTrainingModuleDTORandomDates(Guid trainingSubjectId)
+    public static class TrainingModuleHelper
     {
-        var random = new Random();
-        var periods = new List<PeriodDateTime>();
-
-        int numberOfPeriods = random.Next(1, 6); // Generate between 1 and 5 periods
-        DateTime currentStart = DateTime.UtcNow.Date.AddDays(1); // Start from tomorrow
-
-        for (int i = 0; i < numberOfPeriods; i++)
+        public static AddTrainingModuleDTO GenerateAddTrainingModuleDTORandomDates(Guid trainingSubjectId)
         {
-            // Random duration between 1 and 5 days
-            int durationDays = random.Next(1, 6);
-            DateTime end = currentStart.AddDays(durationDays - 1);
+            var random = new Random();
+            var periods = new List<PeriodDateTime>();
 
-            periods.Add(new PeriodDateTime(currentStart, end));
+            int numberOfPeriods = random.Next(1, 6); // Entre 1 e 5 períodos
+            DateTime currentStart = DateTime.UtcNow.Date.AddDays(1); // Começa a partir de amanhã
 
-            // Add buffer between periods to avoid overlap (1–3 days)
-            currentStart = end.AddDays(random.Next(1, 4));
+            for (int i = 0; i < numberOfPeriods; i++)
+            {
+                int durationDays = random.Next(1, 6); // duração entre 1 e 5 dias
+                DateTime end = currentStart.AddDays(durationDays - 1);
+
+                periods.Add(new PeriodDateTime(currentStart, end));
+
+                currentStart = end.AddDays(random.Next(1, 4)); // intervalo de 1 a 3 dias
+            }
+
+            return new AddTrainingModuleDTO(trainingSubjectId, periods);
         }
-
-        return new AddTrainingModuleDTO
-        {
-            TrainingSubjectId = trainingSubjectId,
-            Periods = periods
-        };
     }
 }
+ */

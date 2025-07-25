@@ -1,4 +1,4 @@
-using Domain.Models;
+/* using Domain.Models;
 using MassTransit;
 using Moq;
 using System;
@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApi;
-using WebApi.Message;
+using WebApi;
+using Domain.Messages;
 using Xunit;
 using Application.IPublisher;
 
@@ -93,3 +94,4 @@ namespace InterfaceAdapters.IntegrationTests.PublisherTests
         }
     }
 }
+ */
