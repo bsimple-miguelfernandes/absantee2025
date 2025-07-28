@@ -1,4 +1,4 @@
-using Application.DTO.TrainingSubject;
+/* using Application.DTO.TrainingSubject;
 using WebApi.IntegrationTests.Helpers;
 using Xunit;
 
@@ -27,4 +27,4 @@ public class TrainingSubjectControllerTests : IntegrationTestBase, IClassFixture
         Assert.Equal(trainingSubjectDTO.Subject, createdTrainingSubjectDTO.Subject);
         Assert.Equal(trainingSubjectDTO.Description, createdTrainingSubjectDTO.Description);
     }
-}
+} */

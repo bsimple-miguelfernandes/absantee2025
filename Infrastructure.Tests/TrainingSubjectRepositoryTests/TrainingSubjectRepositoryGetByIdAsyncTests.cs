@@ -1,8 +1,12 @@
-using Domain.Interfaces;
+using System;
+using System.Threading.Tasks;
+using AutoMapper;
+using Domain.Factory;
 using Domain.Models;
 using Infrastructure.DataModel;
 using Infrastructure.Repositories;
 using Moq;
+using Xunit;
 
 namespace Infrastructure.Tests.TrainingSubjectRepositoryTests;
 
@@ -11,72 +15,58 @@ public class TrainingSubjectRepositoryGetByIdAsyncTests : RepositoryTestBase
     [Fact]
     public async Task WhenPassingValidId_ThenReturnTrainingSubject()
     {
-        //Assert
-        var trainingSubject1 = new Mock<ITrainingSubject>();
+        // Arrange
         var guid1 = Guid.NewGuid();
-        trainingSubject1.Setup(t => t.Id).Returns(guid1);
-        trainingSubject1.Setup(t => t.Subject).Returns("Subject1");
-        trainingSubject1.Setup(t => t.Description).Returns("Description1");
-        var trainingSubject1DM = new TrainingSubjectDataModel(trainingSubject1.Object);
+        var trainingSubject1DM = new TrainingSubjectDataModel
+        {
+            Id = guid1,
+            Subject = "Subject1",
+            Description = "Description1"
+        };
         context.TrainingSubjects.Add(trainingSubject1DM);
-
-        var trainingSubject2 = new Mock<ITrainingSubject>();
-        var guid2 = Guid.NewGuid();
-        trainingSubject2.Setup(t => t.Id).Returns(guid2);
-        trainingSubject2.Setup(t => t.Subject).Returns("Subject2");
-        trainingSubject2.Setup(t => t.Description).Returns("Description2");
-        var trainingSubject2DM = new TrainingSubjectDataModel(trainingSubject2.Object);
-        context.TrainingSubjects.Add(trainingSubject2DM);
-
         await context.SaveChangesAsync();
 
-        _mapper.Setup(m => m.Map<TrainingSubjectDataModel, TrainingSubject>(
-            It.Is<TrainingSubjectDataModel>(t =>
-                t.Id == trainingSubject2DM.Id
-                )))
-                .Returns(new TrainingSubject(trainingSubject2DM.Id, trainingSubject2DM.Subject, trainingSubject2DM.Description));
+        var mapper = new Mock<IMapper>();
+        var factory = new Mock<ITrainingSubjectFactory>();
 
-        var trainingSubjectRepository = new TrainingSubjectRepositoryEF(context, _mapper.Object);
+        mapper.Setup(m => m.Map<TrainingSubjectDataModel, TrainingSubject>(
+            It.Is<TrainingSubjectDataModel>(t => t.Id == trainingSubject1DM.Id)))
+            .Returns(new TrainingSubject(trainingSubject1DM.Id, trainingSubject1DM.Subject, trainingSubject1DM.Description));
 
-        //Act
-        var result = await trainingSubjectRepository.GetByIdAsync(guid2);
+        var repo = new TrainingSubjectRepositoryEF(context, mapper.Object, factory.Object);
 
-        //Assert
+        // Act
+        var result = await repo.GetByIdAsync(guid1);
+
+        // Assert
         Assert.NotNull(result);
-        Assert.Equal(trainingSubject2DM.Id, result.Id);
-
+        Assert.Equal(guid1, result.Id);
+        Assert.Equal("Subject1", result.Subject);
+        Assert.Equal("Description1", result.Description);
     }
 
     [Fact]
     public async Task WhenPassingInvalidId_ThenReturnNull()
     {
-        //Assert
-        var trainingSubject1 = new Mock<ITrainingSubject>();
-        var guid1 = Guid.NewGuid();
-        trainingSubject1.Setup(t => t.Id).Returns(guid1);
-        trainingSubject1.Setup(t => t.Subject).Returns("Subject1");
-        trainingSubject1.Setup(t => t.Description).Returns("Description1");
-        var trainingSubject1DM = new TrainingSubjectDataModel(trainingSubject1.Object);
-        context.TrainingSubjects.Add(trainingSubject1DM);
-
-        var trainingSubject2 = new Mock<ITrainingSubject>();
-        var guid2 = Guid.NewGuid();
-        trainingSubject2.Setup(t => t.Id).Returns(guid2);
-        trainingSubject2.Setup(t => t.Subject).Returns("Subject2");
-        trainingSubject2.Setup(t => t.Description).Returns("Description2");
-        var trainingSubject2DM = new TrainingSubjectDataModel(trainingSubject2.Object);
-        context.TrainingSubjects.Add(trainingSubject2DM);
-
+        // Arrange
+        var validSubject = new TrainingSubjectDataModel
+        {
+            Id = Guid.NewGuid(),
+            Subject = "Subject1",
+            Description = "Description1"
+        };
+        context.TrainingSubjects.Add(validSubject);
         await context.SaveChangesAsync();
 
-        var tsToSearchId = Guid.Empty;
+        var mapper = new Mock<IMapper>();
+        var factory = new Mock<ITrainingSubjectFactory>();
 
-        var trainingSubjectRepository = new TrainingSubjectRepositoryEF(context, _mapper.Object);
+        var repo = new TrainingSubjectRepositoryEF(context, mapper.Object, factory.Object);
 
-        //Act
-        var result = await trainingSubjectRepository.GetByIdAsync(tsToSearchId);
+        // Act
+        var result = await repo.GetByIdAsync(Guid.NewGuid());
 
-        //Assert
+        // Assert
         Assert.Null(result);
     }
 }
