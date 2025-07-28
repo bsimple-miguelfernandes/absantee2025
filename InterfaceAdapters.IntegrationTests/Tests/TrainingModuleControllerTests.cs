@@ -1,4 +1,5 @@
-/* using Application.DTO.TrainingModule;
+/* 
+using Application.DTO.TrainingModule;
 using Application.DTO.TrainingSubject;
 using InterfaceAdapters.IntegrationTests.Helpers;
 using Xunit;
@@ -38,46 +39,6 @@ public class TrainingModuleControllerTests : IntegrationTestBase, IClassFixture<
         Assert.True(trainingModuleDTO.Periods.SequenceEqual(createdTrainingModuleDTO.Periods));
     }
 
-    [Fact]
-    public async Task AddCollaboratorToModule_Return201Created()
-    {
-        // Arrange
-        // Create a random training subject payload
-        var trainingSubjectDTO =
-                    TrainingSubjectHelper.GenerateRandomAddTrainingSubjectDTO();
-
-        // Post new subject and get Id
-        var createdTrainingSubjectDTO =
-                    await PostAndDeserializeAsync<TrainingSubjectDTO>("/api/trainingsubjects", trainingSubjectDTO);
-
-        // Create a training module payload with random dates
-        var trainingModuleDTO =
-            TrainingModuleHelper.GenerateAddTrainingModuleDTORandomDates(createdTrainingSubjectDTO.Id);
-
-        // Post new module
-        var createdTrainingModuleDTO =
-            await PostAndDeserializeAsync<TrainingModuleDTO>("/api/trainingmodules", trainingModuleDTO);
-
-
-        // Create a new Collaborator to add to module
-        var collaboratorDTO = CollaboratorHelper.GenerateRandomCollaboratorDto();
-
-        // Post new collaborator to add 
-        var createdCollaboratorDTO =
-            await PostAndDeserializeAsync<CollaboratorDTO>("/api/collaborators", collaboratorDTO);
-
-        var assocTMCDTO =
-            AssociationTrainingModuleCollaboratorHelper.GenerateCreateAssociationTrainingModuleCollaboratorDTO(createdCollaboratorDTO.Id);
-
-        // Act : Add new collaborator to module
-        var createdAssocDTO =
-            await PostAndDeserializeAsync<AssociationTrainingModuleCollaboratorDTO>($"/api/trainingmodules/{createdTrainingModuleDTO.Id}/collaborators", assocTMCDTO);
-
-        // Assert
-        Assert.NotNull(createdAssocDTO);
-        Assert.Equal(createdTrainingModuleDTO.Id, createdAssocDTO.TrainingModuleId);
-        Assert.Equal(createdCollaboratorDTO.Id, createdAssocDTO.CollaboratorId);
-    }
 
     [Fact]
     public async Task GetActiveCollaboratorsWithNoTrainingDoneForSubject_Return200Ok()
