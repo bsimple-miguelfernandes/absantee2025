@@ -1,7 +1,7 @@
 using Application.DTO.TrainingModule;
 using Domain.Models;
 
-namespace WebApi.IntegrationTests.Helpers;
+namespace InterfaceAdapters.IntegrationTests.Helpers;
 
 public static class TrainingModuleHelper
 {

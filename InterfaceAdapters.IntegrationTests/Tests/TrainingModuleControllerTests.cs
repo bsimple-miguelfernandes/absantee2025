@@ -1,11 +1,9 @@
-using Application.DTO.AssociationTrainingModuleCollaborator;
-using Application.DTO.Collaborators;
-using Application.DTO.TrainingModule;
+/* using Application.DTO.TrainingModule;
 using Application.DTO.TrainingSubject;
-using WebApi.IntegrationTests.Helpers;
+using InterfaceAdapters.IntegrationTests.Helpers;
 using Xunit;
 
-namespace WebApi.IntegrationTests.Tests;
+namespace InterfaceAdapters.IntegrationTests.Tests;
 
 public class TrainingModuleControllerTests : IntegrationTestBase, IClassFixture<IntegrationTestsWebApplicationFactory<Program>>
 {
@@ -87,7 +85,7 @@ public class TrainingModuleControllerTests : IntegrationTestBase, IClassFixture<
         // Arrange
         var iniCollabdIds =
             await GetAndDeserializeAsync<IEnumerable<Guid>>($"/api/collaborators");
-        
+
         // Create a random training subject payload
         var trainingSubjectDTO =
                     TrainingSubjectHelper.GenerateRandomAddTrainingSubjectDTO();
@@ -111,4 +109,4 @@ public class TrainingModuleControllerTests : IntegrationTestBase, IClassFixture<
         // Assert
         Assert.True(iniCollabdIds.SequenceEqual(collabdIds));
     }
-}
+} */

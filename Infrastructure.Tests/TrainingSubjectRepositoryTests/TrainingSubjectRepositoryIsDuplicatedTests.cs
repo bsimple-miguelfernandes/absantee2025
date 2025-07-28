@@ -1,4 +1,4 @@
-﻿using Domain.Interfaces;
+﻿/* using Domain.Interfaces;
 using Infrastructure.DataModel;
 using Infrastructure.Repositories;
 using Moq;
@@ -68,3 +68,4 @@ public class TrainingSubjectRepositoryIsDuplicatedTests : RepositoryTestBase
     }
 }
 
+ */

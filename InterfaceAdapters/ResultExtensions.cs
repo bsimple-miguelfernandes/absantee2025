@@ -1,7 +1,7 @@
 ﻿using Application;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi;
+namespace InterfaceAdapters;
 
 public static class ResultExtensions
 {

@@ -1,6 +1,6 @@
 using Application.DTO.TrainingSubject;
 
-namespace WebApi.IntegrationTests.Helpers;
+namespace InterfaceAdapters.IntegrationTests.Helpers;
 
 public static class TrainingSubjectHelper
 {

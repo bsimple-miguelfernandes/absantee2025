@@ -10,7 +10,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Resolvers;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
-using WebApi;
+using InterfaceAdapters;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,8 +1,8 @@
 using Application.DTO.TrainingSubject;
-using WebApi.IntegrationTests.Helpers;
+using InterfaceAdapters.IntegrationTests.Helpers;
 using Xunit;
 
-namespace WebApi.IntegrationTests.Tests;
+namespace InterfaceAdapters.IntegrationTests.Tests;
 
 public class TrainingSubjectControllerTests : IntegrationTestBase, IClassFixture<IntegrationTestsWebApplicationFactory<Program>>
 {

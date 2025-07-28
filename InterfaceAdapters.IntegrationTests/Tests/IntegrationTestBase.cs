@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace WebApi.IntegrationTests.Tests
+namespace InterfaceAdapters.IntegrationTests.Tests
 {
     public class IntegrationTestBase
     {

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AbsanteeContext))]
-    [Migration("20250625133925_TrainingMicroserviceQuery")]
-    partial class TrainingMicroserviceQuery
+    [Migration("20250727231307_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,37 +24,6 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Infrastructure.DataModel.AssociationTrainingModuleCollaboratorDataModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CollaboratorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TrainingModuleId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AssociationTrainingModuleCollaborators");
-                });
-
-            modelBuilder.Entity("Infrastructure.DataModel.CollaboratorDataModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Collaborators");
-                });
 
             modelBuilder.Entity("Infrastructure.DataModel.TrainingModuleDataModel", b =>
                 {
@@ -89,31 +58,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("TrainingSubjects");
                 });
 
-            modelBuilder.Entity("Infrastructure.DataModel.CollaboratorDataModel", b =>
-                {
-                    b.OwnsOne("Domain.Models.PeriodDateTime", "PeriodDateTime", b1 =>
-                        {
-                            b1.Property<Guid>("CollaboratorDataModelId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<DateTime>("_finalDate")
-                                .HasColumnType("timestamp with time zone");
-
-                            b1.Property<DateTime>("_initDate")
-                                .HasColumnType("timestamp with time zone");
-
-                            b1.HasKey("CollaboratorDataModelId");
-
-                            b1.ToTable("Collaborators");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CollaboratorDataModelId");
-                        });
-
-                    b.Navigation("PeriodDateTime")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Infrastructure.DataModel.TrainingModuleDataModel", b =>
                 {
                     b.OwnsMany("Domain.Models.PeriodDateTime", "Periods", b1 =>
@@ -135,7 +79,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("TrainingModuleDataModelId", "Id");
 
-                            b1.ToTable("TrainingModules_Periods");
+                            b1.ToTable("PeriodDateTime");
 
                             b1.WithOwner()
                                 .HasForeignKey("TrainingModuleDataModelId");

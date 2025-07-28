@@ -5,7 +5,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Instance1"
       },
-      "applicationUrl": "http://localhost:5031",
+      "applicationUrl": "http://localhost:5037",
       "dotnetRunMessages": true
     },
     "Instance2": {

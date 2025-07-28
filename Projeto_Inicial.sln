@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{8D907120-A088-4365-9997-E27C33FD3B59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{E8EE2E9F-8F97-476B-ACBD-78B28B2501FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceAdapters", "InterfaceAdapters\InterfaceAdapters.csproj", "{E8EE2E9F-8F97-476B-ACBD-78B28B2501FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.IntegrationTests", "WebApi.IntegrationTests\WebApi.IntegrationTests.csproj", "{5A7DA35C-EDEA-46D4-B6DA-7AB5E3FA5295}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceAdapters.IntegrationTests", "InterfaceAdapters.IntegrationTests\InterfaceAdapters.IntegrationTests.csproj", "{5A7DA35C-EDEA-46D4-B6DA-7AB5E3FA5295}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

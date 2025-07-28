@@ -2,7 +2,7 @@ using Application.DTO.TrainingModule;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers;
+namespace InterfaceAdapters.Controllers;
 
 [Route("api/trainingmodules")]
 [ApiController]

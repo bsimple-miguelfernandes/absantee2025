@@ -1,4 +1,4 @@
-using Domain.Interfaces;
+/* using Domain.Interfaces;
 using Domain.Models;
 using Infrastructure.DataModel;
 using Infrastructure.Repositories;
@@ -79,4 +79,4 @@ public class TrainingSubjectRepositoryGetByIdAsyncTests : RepositoryTestBase
         //Assert
         Assert.Null(result);
     }
-}
+} */

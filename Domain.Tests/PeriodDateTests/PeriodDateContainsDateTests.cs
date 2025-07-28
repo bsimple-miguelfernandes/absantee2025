@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Interfaces;
 using Domain.Models;
-using Domain.Tests.HolidayPeriodTests;
 
 namespace Domain.Tests.PeriodDateTests
 {

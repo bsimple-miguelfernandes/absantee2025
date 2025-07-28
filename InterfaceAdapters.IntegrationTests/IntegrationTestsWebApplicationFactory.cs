@@ -6,7 +6,7 @@ using Testcontainers.PostgreSql;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace WebApi.IntegrationTests;
+namespace InterfaceAdapters.IntegrationTests;
 
 public class IntegrationTestsWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
 {
